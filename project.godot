@@ -11,13 +11,15 @@ config_version=5
 [application]
 
 config/name="PetFly"
-config/version="1.0.0"
+config/version="1.0.1"
 ; Velopack release feed. GitHub's /releases/latest/download/ always resolves
 ; to the newest release's assets, so this URL never needs bumping.
 config/update_feed="https://github.com/eagnespuerto/pet-fly/releases/latest/download"
 run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
+; Native .ico gives the running window and taskbar a crisp icon on Windows.
+config/windows_native_icon="res://installer/PetFly.ico"
 
 [display]
 
