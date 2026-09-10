@@ -1,5 +1,11 @@
 # PetFly credits
 
+The PetFly **source code** is MIT licensed (see [LICENSE](LICENSE)).
+
+The bundled **assets are not** — they keep the licences below, and the three
+CC-BY fly models require attribution when you redistribute the game. This file
+and the in-game credits screen (`C`) provide it.
+
 ## Brain data — Virtual Fly Brain
 
 Neuroanatomy in PetFly is real. Every circuit in the brain panel is a neuron
