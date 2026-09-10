@@ -17,9 +17,11 @@ extends Node
 ##     packages\           <- downloaded .nupkg files land here
 ##     current\PetFly.exe  <- the running game
 ##
-## The feed URL is read from application/config/update_feed in project.godot.
-## It is empty by default: with no feed configured, update checks are simply
-## skipped rather than pointed at a URL that does not exist.
+## The feed URL is read from application/config/update_feed in project.godot,
+## and points at GitHub's /releases/latest/download/, which always resolves to
+## the newest release's assets - so the URL never needs bumping. If it is left
+## empty, update checks are skipped entirely rather than pointed at a URL that
+## does not exist.
 
 signal update_available(version: String, notes: String)
 signal update_progress(fraction: float)
@@ -30,6 +32,9 @@ signal check_finished(found: bool)
 const FEED_FILE := "releases.win.json"
 
 var feed_url := ""
+## True once a feed request has actually come back parsed. Distinguishes
+## "checked, already up to date" from "could not reach the feed at all".
+var live_reachable := false
 var _http: HTTPRequest
 var _mode := ""                # "check" | "download"
 var _pending: Dictionary = {}
@@ -82,11 +87,13 @@ static func compare_versions(a: String, b: String) -> int:
 
 
 # -- checking ----------------------------------------------------------------
-func check() -> void:
+func check(force := false) -> void:
+	## `force` skips the managed-install guard so tests can exercise the real
+	## network path from the editor. It does not make apply_now() work.
 	if feed_url == "":
 		check_finished.emit(false)
 		return
-	if not is_managed_install():
+	if not force and not is_managed_install():
 		# Portable or editor run: nothing to update in place.
 		check_finished.emit(false)
 		return
@@ -107,6 +114,7 @@ func _on_completed(result: int, code: int, _headers: PackedStringArray,
 	_mode = ""
 	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
 		if mode == "check":
+			live_reachable = false
 			check_finished.emit(false)
 		else:
 			update_failed.emit("download failed (HTTP %d)" % code)
@@ -121,8 +129,10 @@ func _on_completed(result: int, code: int, _headers: PackedStringArray,
 func _handle_feed(body: PackedByteArray) -> void:
 	var parsed: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if typeof(parsed) != TYPE_DICTIONARY:
+		live_reachable = false
 		check_finished.emit(false)
 		return
+	live_reachable = true
 
 	# Velopack's feed lists assets; pick the newest full package.
 	var assets: Array = parsed.get("Assets", parsed.get("assets", []))

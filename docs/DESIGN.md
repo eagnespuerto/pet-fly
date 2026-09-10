@@ -147,24 +147,35 @@ Engine itself ships with. It produces, in `dist/`:
 
 Velopack CLI is required once: `dotnet tool install -g vpk`.
 
-### Enabling in-game updates
+### In-game updates
 
-Updates are **off by default**, because a release feed needs somewhere to live
-and this repo does not assume a host. To turn them on:
+Updates come from this repo's GitHub Releases. `project.godot` points at:
 
-1. Publish the contents of `dist/` to any static URL.
-2. Set that URL in `project.godot`:
+```ini
+config/update_feed="https://github.com/eagnespuerto/pet-fly/releases/latest/download"
+```
 
-   ```ini
-   config/update_feed="https://example.com/petfly/"
-   ```
+GitHub's `/releases/latest/download/` always resolves to the newest release's
+assets, so that URL never needs bumping. At startup PetFly fetches
+`releases.win.json` from it, compares versions, and if a newer one exists shows
+an **UPDATE TO x.y.z** button — then downloads the `.nupkg` and hands it to
+Velopack's `Update.exe`, which installs it and relaunches the game.
 
-3. Ship a build. From then on, PetFly checks the feed at startup, shows an
-   **UPDATE TO x.y.z** button when a newer version exists, downloads the
-   `.nupkg`, and hands it to Velopack's `Update.exe` to install and relaunch.
+Update checks are skipped for portable and from-source runs, which have nothing
+to update in place.
 
-With no feed set, the check is skipped silently. Update checks are also skipped
-for portable and from-source runs, which have nothing to update in place.
+### Cutting a release
+
+```powershell
+pwsh toolsuild.ps1 -Version 1.1.0
+gh release create v1.1.0 dist\PetFly-win-Setup.exe dist\PetFly-win-Portable.zip `
+    dist\PetFly-1.1.0-full.nupkg disteleases.win.json distssets.win.json dist\RELEASES `
+    --title "PetFly 1.1.0" --notes-file docs\RELEASE_NOTES.md
+```
+
+Bump `config/version` in `project.godot` first. Installed copies pick the new
+version up on their next launch. `releases.win.json` must be attached to every
+release, since it is the feed itself.
 
 ## Architecture
 
