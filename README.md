@@ -1,5 +1,11 @@
 # PetFly
 
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![release](https://img.shields.io/github/v/release/eagnespuerto/pet-fly?include_prereleases&sort=semver)](https://github.com/eagnespuerto/pet-fly/releases/latest)
+[![made with](https://img.shields.io/badge/made%20with-Godot-478CBF?logo=godotengine&logoColor=white)](https://github.com/eagnespuerto/pet-fly)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20me-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/eagnespuerto)
+[![Linktree](https://img.shields.io/badge/Linktree-soitsagnes-43E55E?logo=linktree&logoColor=white)](https://linktr.ee/soitsagnes)
+
 A virtual pet fruit fly with a real *Drosophila* brain.
 
 You feed it, put its lights on and off, and watch it sleep. What makes it more
